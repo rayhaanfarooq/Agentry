@@ -1,0 +1,2 @@
+-- Phase 1 foundation migration.
+-- Add application tables and schema changes in future migrations.

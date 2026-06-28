@@ -1,3 +1,10 @@
+from typing import Annotated
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.session import get_db_session
 
-__all__ = ["get_db_session"]
+DatabaseSession = Annotated[AsyncSession, Depends(get_db_session)]
+
+__all__ = ["DatabaseSession", "get_db_session"]

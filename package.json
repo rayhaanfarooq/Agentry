@@ -1,0 +1,39 @@
+{
+  "name": "agentry",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "postinstall": "node scripts/setup.mjs --postinstall",
+    "prepare": "node scripts/setup-hooks.mjs",
+    "dev": "node scripts/dev.mjs",
+    "dev:backend": "node scripts/dev.mjs backend",
+    "dev:frontend": "node scripts/dev.mjs frontend",
+    "dev:landing": "node scripts/dev.mjs landing",
+    "dev:dummy-agent": "node scripts/dev.mjs dummy-agent",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:status:env": "supabase status -o env",
+    "supabase:login": "supabase login",
+    "supabase:link": "supabase link",
+    "supabase:migration:list": "supabase migration list",
+    "supabase:migration:new": "supabase migration new",
+    "supabase:migration:up": "supabase migration up",
+    "supabase:db:diff": "supabase db diff",
+    "supabase:db:reset": "supabase db reset --local",
+    "supabase:db:pull": "supabase db pull --linked",
+    "supabase:db:push": "supabase db push --linked",
+    "lint": "node scripts/run-task.mjs lint",
+    "format": "node scripts/run-task.mjs format",
+    "typecheck": "node scripts/run-task.mjs typecheck",
+    "test": "node scripts/run-task.mjs test"
+  },
+  "devDependencies": {
+    "supabase": "^2.108.0"
+  }
+}

@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import SecretStr, computed_field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import AliasChoices, Field, SecretStr, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 DEFAULT_CORS_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:4173",
     "http://127.0.0.1:4173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "http://localhost:4174",
-    "http://127.0.0.1:4174",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 
@@ -26,15 +24,35 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "Agentry API"
-    app_env: Literal["development", "staging", "production"] = "development"
-    app_host: str = "0.0.0.0"
-    app_port: int = 8000
-    cors_origins: list[str] = DEFAULT_CORS_ORIGINS
+    app_name: str = Field(
+        default="Agentry",
+        validation_alias=AliasChoices("APP_NAME"),
+    )
+    app_version: str = Field(
+        default="0.0.1",
+        validation_alias=AliasChoices("APP_VERSION"),
+    )
+    environment: Literal["development", "staging", "production"] = Field(
+        default="development",
+        validation_alias=AliasChoices("ENVIRONMENT", "APP_ENV"),
+    )
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        validation_alias=AliasChoices("LOG_LEVEL"),
+    )
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: DEFAULT_CORS_ORIGINS.copy(),
+        validation_alias=AliasChoices("CORS_ORIGINS"),
+    )
 
-    database_url: str
-    supabase_url: str | None = None
-    supabase_anon_key: SecretStr | None = None
+    database_url: str = Field(validation_alias=AliasChoices("DATABASE_URL"))
+    supabase_url: str = Field(validation_alias=AliasChoices("SUPABASE_URL"))
+    supabase_anon_key: SecretStr = Field(
+        validation_alias=AliasChoices("SUPABASE_ANON_KEY"),
+    )
+    supabase_service_role_key: SecretStr = Field(
+        validation_alias=AliasChoices("SUPABASE_SERVICE_ROLE_KEY"),
+    )
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -43,7 +61,65 @@ class Settings(BaseSettings):
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
 
-    @computed_field(return_type=str)
+    @field_validator("environment", mode="before")
+    @classmethod
+    def normalize_environment(cls, value: str) -> str:
+        return value.lower()
+
+    @field_validator("log_level", mode="before")
+    @classmethod
+    def normalize_log_level(cls, value: str) -> str:
+        return value.upper()
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def validate_database_url(cls, value: str) -> str:
+        normalized_value = value.strip()
+
+        if not normalized_value:
+            raise ValueError("DATABASE_URL cannot be empty.")
+
+        if "db.example.supabase.co" in normalized_value:
+            raise ValueError(
+                "DATABASE_URL is still using the placeholder Supabase host "
+                "from .env.example."
+            )
+
+        return normalized_value
+
+    @field_validator("supabase_url", mode="before")
+    @classmethod
+    def validate_supabase_url(cls, value: str) -> str:
+        normalized_value = value.strip().rstrip("/")
+
+        if not normalized_value:
+            raise ValueError("SUPABASE_URL cannot be empty.")
+
+        if "your-project.supabase.co" in normalized_value:
+            raise ValueError(
+                "SUPABASE_URL is still using the placeholder host from .env.example."
+            )
+
+        return normalized_value
+
+    @field_validator("supabase_anon_key", "supabase_service_role_key", mode="before")
+    @classmethod
+    def validate_supabase_keys(cls, value: str | SecretStr) -> str:
+        normalized_value = (
+            value.get_secret_value() if isinstance(value, SecretStr) else value
+        ).strip()
+
+        if not normalized_value:
+            raise ValueError("Supabase API keys cannot be empty.")
+
+        if normalized_value in {"your-anon-key", "your-service-role-key"}:
+            raise ValueError(
+                "Supabase API keys are still using placeholder values from "
+                ".env.example."
+            )
+
+        return normalized_value
+
     @property
     def async_database_url(self) -> str:
         if self.database_url.startswith("postgresql+asyncpg://"):
@@ -58,16 +134,15 @@ class Settings(BaseSettings):
             )
         return self.database_url
 
-    @computed_field(return_type=str)
     @property
-    def sync_database_url(self) -> str:
-        if self.database_url.startswith("postgresql+asyncpg://"):
-            return self.database_url.replace("postgresql+asyncpg://", "postgresql://", 1)
-        if self.database_url.startswith("postgres://"):
-            return self.database_url.replace("postgres://", "postgresql://", 1)
-        return self.database_url
+    def supabase_auth_settings_url(self) -> str:
+        return f"{self.supabase_url}/auth/v1/settings"
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment == "production"
 
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore[call-arg]

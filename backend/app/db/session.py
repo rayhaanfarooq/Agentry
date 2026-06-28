@@ -1,23 +1,17 @@
 from collections.abc import AsyncGenerator
+from typing import cast
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from fastapi import Request
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.core.config import get_settings
-
-settings = get_settings()
-
-engine = create_async_engine(
-    settings.async_database_url,
-    pool_pre_ping=True,
-)
-
-SessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+SessionFactory = async_sessionmaker[AsyncSession]
 
 
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    async with SessionLocal() as session:
+def get_session_factory(request: Request) -> SessionFactory:
+    return cast(SessionFactory, request.app.state.session_factory)
+
+
+async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:
+    session_factory = get_session_factory(request)
+    async with session_factory() as session:
         yield session

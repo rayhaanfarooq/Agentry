@@ -31,6 +31,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: "#059669",
+        danger: "#DC2626",
+        warning: "#D97706",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -38,11 +41,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        panel: "0 24px 80px rgba(15, 23, 42, 0.08)",
-      },
-      backgroundImage: {
-        "page-grid":
-          "linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px)",
+        panel:
+          "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04)",
       },
     },
   },

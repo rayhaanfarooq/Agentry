@@ -1,0 +1,2 @@
+-- Seed data is intentionally empty in Phase 1.
+-- Add local-only bootstrap data here when product tables exist.
