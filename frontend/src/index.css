@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 25% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 214 84% 56%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 215 28% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 215 20% 96%;
+    --muted-foreground: 215 16% 40%;
+    --accent: 214 100% 96%;
+    --accent-foreground: 221 39% 15%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 214 84% 56%;
+    --radius: 1.25rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: "Manrope", system-ui, sans-serif;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 35%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 245, 249, 0.88) 100%);
+  }
+
+  code {
+    font-family: "JetBrains Mono", monospace;
+  }
+}
+
+@layer utilities {
+  .surface {
+    @apply border border-white/60 bg-white/85 shadow-panel backdrop-blur;
+  }
+}
