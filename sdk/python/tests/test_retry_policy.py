@@ -1,5 +1,5 @@
-from agentry.transport import RetryPolicy
 from pytest import MonkeyPatch
+from runloop.transport import RetryPolicy
 
 
 def test_retry_policy_retries_until_success(monkeypatch: MonkeyPatch) -> None:
@@ -15,7 +15,7 @@ def test_retry_policy_retries_until_success(monkeypatch: MonkeyPatch) -> None:
             raise RuntimeError("temporary")
         return "ok"
 
-    monkeypatch.setattr("agentry.transport.retry.time.sleep", fake_sleep)
+    monkeypatch.setattr("runloop.transport.retry.time.sleep", fake_sleep)
 
     policy = RetryPolicy(
         max_attempts=3,

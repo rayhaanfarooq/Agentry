@@ -1,0 +1,18 @@
+---
+description: Load and follow Agent Skills from the project skills/ folder when relevant
+alwaysApply: true
+---
+
+# Project Skills
+
+This repo keeps Cursor Agent Skills in `skills/` at the repository root.
+
+When a task matches a skill's description, or the user mentions a skill by name:
+
+1. Look for a matching folder under `skills/<skill-name>/SKILL.md`.
+2. Read that `SKILL.md` (and linked files in the same folder) before acting.
+3. Follow the skill's instructions precisely.
+
+Do not invent skill behavior when a matching skill file exists — read it first.
+
+To add skills, see `skills/README.md`.

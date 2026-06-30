@@ -1,12 +1,9 @@
-# Agentry
+# Runloop
 
-Agentry is a monorepo for the Phase 1 MVP foundation of an AI developer
-platform focused on reliable AI agent development.
-
-This milestone is intentionally narrow: build a production-ready foundation for
-the backend, dashboard, landing page, local tooling, and Supabase-backed
-infrastructure so future tracing, evaluations, and observability work has a
-clean place to live.
+Runloop is an AI eval system for teams building agentic applications. This
+monorepo contains the Phase 1 MVP foundation: backend, dashboard, landing
+page, local tooling, and Supabase-backed infrastructure for tracing,
+evaluations, and observability.
 
 ## Architecture
 
@@ -16,6 +13,7 @@ clean place to live.
 - `dummy-agent/`: Standalone Gemini-powered reference agent for demos, local validation, and future SDK testing
 - `sdk/python/`: Official Python SDK for lightweight tracing instrumentation
 - `context/`: Focused architecture and workflow documents for human and AI onboarding
+- `skills/`: Cursor Agent Skills you can add from online or author for this repo
 - `scripts/`: Root developer workflow commands for install, dev, lint, format, typecheck, and test
 - `supabase/`: Supabase CLI project configuration, migrations, and local development settings
 
@@ -26,12 +24,13 @@ cleanly.
 ## Repository Structure
 
 ```text
-agentry/
+runloop/
 ├── backend/
 ├── frontend/
 ├── landingpage/
 ├── dummy-agent/
 ├── context/
+├── skills/
 ├── sdk/
 ├── scripts/
 ├── supabase/
@@ -136,7 +135,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 PORT=8000
 ENVIRONMENT=development
 LOG_LEVEL=INFO
-APP_NAME=Agentry
+APP_NAME=Runloop
 APP_VERSION=0.0.1
 ```
 
@@ -166,8 +165,8 @@ PREVIEW_PORT=4000
 
 ```bash
 GEMINI_API_KEY=
-AGENTRY_API_URL=http://localhost:8000
-AGENTRY_API_KEY=
+RUNLOOP_API_URL=http://localhost:8000
+RUNLOOP_API_KEY=
 ```
 
 Each app validates the environment it depends on and fails early when required
@@ -175,7 +174,7 @@ values are missing or invalid.
 
 ## Root Commands
 
-Run all commands from `/Users/rayhaanfarooq/Desktop/Agentry`.
+Run all commands from `/Users/rayhaanfarooq/Desktop/Runloop`.
 
 - `npm install`: first-time setup for all applications
 - `npm run setup`: rerun the shared setup flow manually
@@ -267,12 +266,12 @@ npm run supabase:db:push
 
 - Standalone terminal chat client powered by Gemini over direct HTTP
 - Keeps a simple local tool registry ready for future tracing and SDK validation
-- Stays intentionally small so new Agentry features can be exercised without extra application complexity
+- Stays intentionally small so new Runloop features can be exercised without extra application complexity
 
 ### Python SDK
 
-- Installable `agentry` package under `sdk/python`
-- Exposes `from agentry import monitor` as the primary instrumentation API
+- Installable `runloop` package under `sdk/python`
+- Exposes `from runloop import monitor` as the primary instrumentation API
 - Supports decorator-based traces, context managers, async functions, batching, and retrying uploads
 
 ## Future Roadmap

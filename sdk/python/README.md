@@ -1,18 +1,19 @@
-# Agentry Python SDK
+# Runloop Python SDK
 
-The Agentry Python SDK is the primary developer-facing package for instrumenting
-AI applications with lightweight tracing.
+The Runloop Python SDK is the primary developer-facing package for
+instrumenting AI applications and sending trace data to the Runloop eval
+platform.
 
 ## Installation
 
 ```bash
-pip install agentry
+pip install runloop
 ```
 
 For local development inside this monorepo:
 
 ```bash
-cd /Users/rayhaanfarooq/Desktop/Agentry/sdk/python
+cd /Users/rayhaanfarooq/Desktop/Runloop/sdk/python
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt
@@ -23,9 +24,9 @@ pip install -r requirements-dev.txt
 Set environment variables:
 
 ```bash
-export AGENTRY_API_URL=http://localhost:8000
-export AGENTRY_API_KEY=your-api-key
-export AGENTRY_SERVICE_NAME=my-agent
+export RUNLOOP_API_URL=http://localhost:8000
+export RUNLOOP_API_KEY=your-api-key
+export RUNLOOP_SERVICE_NAME=my-agent
 ```
 
 If the SDK is imported before configuration exists, instrumentation still runs
@@ -34,7 +35,7 @@ locally but export is skipped and a warning is emitted once.
 You can also configure explicitly:
 
 ```python
-from agentry import monitor
+from runloop import monitor
 
 monitor.configure(
     api_url="http://localhost:8000",
@@ -48,7 +49,7 @@ monitor.configure(
 Decorator-based tracing:
 
 ```python
-from agentry import monitor
+from runloop import monitor
 
 @monitor.trace()
 def answer() -> str:
@@ -58,7 +59,7 @@ def answer() -> str:
 Named trace scopes:
 
 ```python
-from agentry import monitor
+from runloop import monitor
 
 with monitor.trace("Generate Response"):
     ...
@@ -67,7 +68,7 @@ with monitor.trace("Generate Response"):
 Nested spans:
 
 ```python
-from agentry import monitor
+from runloop import monitor
 
 with monitor.trace("request"):
     with monitor.span("retrieve_context"):
@@ -77,7 +78,7 @@ with monitor.trace("request"):
 Async functions are supported:
 
 ```python
-from agentry import monitor
+from runloop import monitor
 
 @monitor.trace("async_answer")
 async def answer() -> str:
@@ -98,7 +99,7 @@ async def answer() -> str:
 The SDK posts JSON batches to:
 
 ```text
-{AGENTRY_API_URL}/v1/traces
+{RUNLOOP_API_URL}/v1/traces
 ```
 
 The backend ingestion endpoint is expected to be implemented separately from the

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import asyncio
 
-from agentry.client.monitor import AgentryMonitor
-from agentry.config import AgentrySettings
-from agentry.models import TraceBatch
-from agentry.transport import BatchProcessor
+from runloop.client.monitor import RunloopMonitor
+from runloop.config import RunloopSettings
+from runloop.models import TraceBatch
+from runloop.transport import BatchProcessor
 
 
 class FakeTransport:
@@ -16,9 +16,9 @@ class FakeTransport:
         self.batches.append(batch)
 
 
-def build_monitor(transport: FakeTransport) -> AgentryMonitor:
-    monitor = AgentryMonitor(
-        settings=AgentrySettings.model_validate(
+def build_monitor(transport: FakeTransport) -> RunloopMonitor:
+    monitor = RunloopMonitor(
+        settings=RunloopSettings.model_validate(
             {
                 "api_url": None,
                 "api_key": None,
@@ -26,7 +26,7 @@ def build_monitor(transport: FakeTransport) -> AgentryMonitor:
             }
         )
     )
-    monitor._settings = AgentrySettings.model_validate(
+    monitor._settings = RunloopSettings.model_validate(
         {
             "api_url": "http://localhost:8000",
             "api_key": "secret-key",

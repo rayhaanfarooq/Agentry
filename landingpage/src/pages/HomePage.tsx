@@ -11,14 +11,14 @@ import {
 const navigation = [
   { label: "Features", href: "#features" },
   { label: "Docs", href: "#docs" },
-  { label: "GitHub", href: "https://github.com/rayhaanfarooq/Agentry" },
+  { label: "GitHub", href: "https://github.com/rayhaanfarooq/Runloop" },
   { label: "Pricing", href: "#pricing" },
 ];
 
 const footerLinks = [
   { label: "Company", href: "#hero" },
   { label: "Docs", href: "#docs" },
-  { label: "GitHub", href: "https://github.com/rayhaanfarooq/Agentry" },
+  { label: "GitHub", href: "https://github.com/rayhaanfarooq/Runloop" },
   { label: "Privacy", href: "#pricing" },
   { label: "Terms", href: "#pricing" },
   { label: "Contact", href: "#footer" },
@@ -115,10 +115,10 @@ const faqs = [
   {
     question: "What models are supported?",
     answer:
-      "Agentry is being designed as provider-agnostic developer infrastructure, so the architecture is meant to support multiple model vendors rather than only one.",
+      "Runloop is being designed as provider-agnostic developer infrastructure, so the architecture is meant to support multiple model vendors rather than only one.",
   },
   {
-    question: "Does Agentry work with OpenAI?",
+    question: "Does Runloop work with OpenAI?",
     answer:
       "Yes. The platform direction is to instrument agent systems regardless of the model provider behind them.",
   },
@@ -135,7 +135,7 @@ const faqs = [
 ];
 
 const codeExamples = {
-  python: `from agentry import monitor
+  python: `from runloop import monitor
 
 def answer(message: str) -> str:
     with monitor.trace("support-router"):
@@ -158,7 +158,7 @@ import httpx
 now = datetime.now(UTC).isoformat()
 
 payload = {
-    "sdk": {"name": "agentry-python", "version": "0.1.0"},
+    "sdk": {"name": "runloop-python", "version": "0.1.0"},
     "traces": [
         {
             "trace_id": str(uuid4()),
@@ -176,7 +176,7 @@ payload = {
     ],
 }
 
-httpx.post(f"{AGENTRY_API_URL}/v1/traces", json=payload, timeout=5)`,
+httpx.post(f"{RUNLOOP_API_URL}/v1/traces", json=payload, timeout=5)`,
 };
 
 export function HomePage() {
@@ -187,11 +187,11 @@ export function HomePage() {
     <main className="landing-page">
       <header className="site-header">
         <div className="page-shell site-header__inner">
-          <a className="brand" href="#hero" aria-label="Agentry home">
-            <span className="brand__mark">A</span>
+          <a className="brand" href="#hero" aria-label="Runloop home">
+            <span className="brand__mark">R</span>
             <span className="brand__lockup">
-              <strong>Agentry</strong>
-              <span>AI agent infrastructure</span>
+              <strong>Runloop</strong>
+              <span>AI eval system</span>
             </span>
           </a>
 
@@ -227,7 +227,7 @@ export function HomePage() {
       <section className="hero" id="hero">
         <div className="page-shell hero__layout">
           <div className="hero__copy">
-            <p className="eyebrow">Developer infrastructure for AI agents</p>
+            <p className="eyebrow">AI eval system for agentic applications</p>
             <h1>
               Inspect every execution
               <br />
@@ -236,8 +236,9 @@ export function HomePage() {
               production problem.
             </h1>
             <p className="hero__lede">
-              Trace, evaluate, benchmark, and improve AI agents with the kind of
-              review surface engineering teams expect from real infrastructure.
+              Runloop helps teams trace, evaluate, benchmark, and improve AI
+              agents with the review surface engineering teams expect from a
+              serious eval platform.
             </p>
 
             <div className="hero__actions">
@@ -294,7 +295,7 @@ export function HomePage() {
           </div>
           <div className="section-block__body">
             <p>
-              Agentry is built so teams can understand how the response was
+              Runloop is built so teams can understand how the response was
               produced, what context shaped it, which tool calls influenced it,
               and whether it met the bar required to ship.
             </p>
@@ -389,7 +390,7 @@ export function HomePage() {
             <p className="eyebrow">Why teams can trust it</p>
             <h2>Built like infrastructure, not a launch page.</h2>
             <p>
-              Agentry keeps vendor tooling in the infrastructure layer and keeps
+              Runloop keeps vendor tooling in the infrastructure layer and keeps
               application decisions in code. That separation is what makes the
               product durable as the platform grows.
             </p>
@@ -465,15 +466,15 @@ export function HomePage() {
       <footer className="site-footer" id="footer">
         <div className="page-shell site-footer__inner">
           <div className="site-footer__brand">
-            <a className="brand" href="#hero" aria-label="Agentry home">
-              <span className="brand__mark">A</span>
+            <a className="brand" href="#hero" aria-label="Runloop home">
+              <span className="brand__mark">R</span>
               <span className="brand__lockup">
-                <strong>Agentry</strong>
-                <span>Developer infrastructure for AI agents</span>
+                <strong>Runloop</strong>
+                <span>AI eval system</span>
               </span>
             </a>
             <p>
-              Trace, evaluate, benchmark, and improve AI agents with confidence.
+              Trace, evaluate, benchmark, and improve AI agents with Runloop.
             </p>
           </div>
 

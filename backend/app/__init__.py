@@ -1,1 +1,1 @@
-"""Agentry backend application package."""
+"""Runloop backend application package."""

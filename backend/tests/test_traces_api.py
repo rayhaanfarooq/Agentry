@@ -98,7 +98,7 @@ class StubTraceService:
                 "model": {"name": "gemini-2.5-pro", "provider": "google"},
                 "tokens": {"input_tokens": 1, "output_tokens": 2, "total_tokens": 3},
                 "error": None,
-                "sdk": SDKInfo(name="agentry-python", version="0.1.0").model_dump(),
+                "sdk": SDKInfo(name="runloop-python", version="0.1.0").model_dump(),
                 "created_at": "2026-06-28T10:00:02+00:00",
                 "updated_at": "2026-06-28T10:00:02+00:00",
                 "spans": [],
@@ -123,7 +123,7 @@ def test_trace_routes_ingest_and_list() -> None:
         ingest_response = client.post(
             "/v1/traces",
             json={
-                "sdk": {"name": "agentry-python", "version": "0.1.0"},
+                "sdk": {"name": "runloop-python", "version": "0.1.0"},
                 "traces": [
                     {
                         "trace_id": "11111111-1111-4111-8111-111111111111",
@@ -179,7 +179,7 @@ def test_trace_routes_return_validation_errors_for_bad_payloads() -> None:
         response = client.post(
             "/v1/traces",
             json={
-                "sdk": {"name": "agentry-python", "version": "0.1.0"},
+                "sdk": {"name": "runloop-python", "version": "0.1.0"},
                 "traces": [
                     {
                         "trace_id": "not-a-uuid",

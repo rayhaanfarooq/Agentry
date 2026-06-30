@@ -20,7 +20,7 @@ def build_trace_batch() -> TraceBatchIngestionRequest:
 
     return TraceBatchIngestionRequest.model_validate(
         {
-            "sdk": {"name": "agentry-python", "version": "0.1.0"},
+            "sdk": {"name": "runloop-python", "version": "0.1.0"},
             "traces": [
                 {
                     "trace_id": str(trace_id),

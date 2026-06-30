@@ -17,7 +17,7 @@
   - async support
   - clean dependency injection
   - strong OpenAPI generation
-- Why it fits Agentry:
+- Why it fits Runloop:
   - the product needs many infrastructure-style APIs
   - service boundaries stay explicit
 
@@ -28,7 +28,7 @@
   - explicit query construction
   - async session support
   - portability beyond a single hosted provider
-- Why it fits Agentry:
+- Why it fits Runloop:
   - business logic stays in Python instead of moving into vendor SDKs
 
 ### Pydantic Settings
@@ -37,7 +37,7 @@
   - strict environment validation
   - typed config
   - fail-fast startup behavior
-- Why it fits Agentry:
+- Why it fits Runloop:
   - infrastructure-heavy products need configuration errors to be obvious immediately
 
 ## Infrastructure
@@ -48,7 +48,7 @@
   - managed PostgreSQL
   - local development tooling
   - future Auth and Storage support
-- Why it fits Agentry:
+- Why it fits Runloop:
   - it accelerates infrastructure setup without replacing application architecture
 
 ### Supabase CLI
@@ -57,7 +57,7 @@
   - local stack management
   - versioned SQL migrations
   - remote project linking
-- Why it fits Agentry:
+- Why it fits Runloop:
   - it creates a native Supabase workflow without giving up SQLAlchemy
 
 ## Frontend
@@ -96,7 +96,7 @@
   - server-state caching
   - request lifecycle management
   - background refetch support
-- Why it fits Agentry:
+- Why it fits Runloop:
   - dashboard workflows are backend-driven and benefit from explicit async state handling
 
 ### TailwindCSS

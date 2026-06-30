@@ -113,7 +113,7 @@ process.on("SIGINT", () => {
     return;
   }
 
-  logWarning("Stopping Agentry development processes.");
+  logWarning("Stopping Runloop development processes.");
   shutdown("SIGINT");
 });
 

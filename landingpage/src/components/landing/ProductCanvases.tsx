@@ -80,7 +80,7 @@ export function HeroCanvas() {
   return (
     <ProductShell
       label="Product overview"
-      title="Agentry / production workspace"
+      title="Runloop / production workspace"
       status="Live"
       className="product-shell--hero"
     >
@@ -382,7 +382,7 @@ export function IntegrationCanvas() {
           </div>
         </Panel>
 
-        <Panel label="Pipeline" title="Agentry ingestion path">
+        <Panel label="Pipeline" title="Runloop ingestion path">
           <div className="pipeline-list">
             {[
               "SDK captures root trace + spans",

@@ -21,15 +21,15 @@ export function colorize(value, color) {
 }
 
 export function logInfo(message) {
-  process.stdout.write(`${colorize("[agentry]", CYAN)} ${message}\n`);
+  process.stdout.write(`${colorize("[runloop]", CYAN)} ${message}\n`);
 }
 
 export function logWarning(message) {
-  process.stderr.write(`${colorize("[agentry]", YELLOW)} ${message}\n`);
+  process.stderr.write(`${colorize("[runloop]", YELLOW)} ${message}\n`);
 }
 
 export function logError(message) {
-  process.stderr.write(`${colorize("[agentry]", RED)} ${message}\n`);
+  process.stderr.write(`${colorize("[runloop]", RED)} ${message}\n`);
 }
 
 export function formatPrefix(label, color) {

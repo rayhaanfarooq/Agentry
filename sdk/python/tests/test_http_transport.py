@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 
 import httpx
-from agentry.config import AgentrySettings
-from agentry.models import SDKInfo, TraceBatch, TraceRecord
-from agentry.transport import HTTPTransport
+from runloop.config import RunloopSettings
+from runloop.models import SDKInfo, TraceBatch, TraceRecord
+from runloop.transport import HTTPTransport
 
 
 def make_trace_batch() -> TraceBatch:
@@ -36,7 +36,7 @@ def test_http_transport_retries_retryable_failures() -> None:
         return httpx.Response(status_code=202, json={"accepted": True})
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
-    settings = AgentrySettings.model_validate(
+    settings = RunloopSettings.model_validate(
         {
             "api_url": "http://localhost:8000",
             "api_key": "secret-key",

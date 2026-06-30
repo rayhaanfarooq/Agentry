@@ -2,7 +2,7 @@
 
 ## System Shape
 
-- Agentry is a monorepo with independent applications plus shared workflow tooling.
+- Runloop is a monorepo with independent applications plus shared workflow tooling.
 - The current platform has five major product surfaces:
   - `backend/`: FastAPI application and persistence layer
   - `frontend/`: authenticated dashboard

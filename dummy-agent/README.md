@@ -1,10 +1,10 @@
-# Agentry Dummy Agent
+# Runloop Dummy Agent
 
-The dummy agent is a small standalone Python application used for local Agentry
+The dummy agent is a small standalone Python application used for local Runloop
 development, demos, and future SDK validation.
 
 It is intentionally separate from the production platform. It does not depend
-on FastAPI and communicates with Agentry only through HTTP-facing configuration.
+on FastAPI and communicates with Runloop only through HTTP-facing configuration.
 
 ## What It Does Today
 
@@ -44,11 +44,11 @@ Copy `.env.example` to `.env` and fill in:
 
 ```bash
 GEMINI_API_KEY=
-AGENTRY_API_URL=
-AGENTRY_API_KEY=
+RUNLOOP_API_URL=
+RUNLOOP_API_KEY=
 ```
 
-`AGENTRY_API_URL` and `AGENTRY_API_KEY` are required even though they are not
+`RUNLOOP_API_URL` and `RUNLOOP_API_KEY` are required even though they are not
 used yet. They exist now so future trace and SDK integration can be added
 without restructuring the project.
 
@@ -71,7 +71,7 @@ npm run dev:dummy-agent
 
 ## Tool Registry
 
-The tool layer exists now so future Agentry features can produce realistic
+The tool layer exists now so future Runloop features can produce realistic
 local traces.
 
 Registered tools:
@@ -87,7 +87,7 @@ These tools are not invoked by the initial chat loop yet.
 
 This project is designed to make future additions straightforward, including:
 
-- Agentry trace instrumentation
+- Runloop trace instrumentation
 - evaluation runs
 - prompt version capture
 - tool call tracing

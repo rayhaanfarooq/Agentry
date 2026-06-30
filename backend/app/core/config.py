@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = Field(
-        default="Agentry",
+        default="Runloop",
         validation_alias=AliasChoices("APP_NAME"),
     )
     app_version: str = Field(

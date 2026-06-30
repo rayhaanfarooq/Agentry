@@ -1,10 +1,10 @@
 # Project Vision
 
-## What Agentry Is
+## What Runloop Is
 
-- Agentry is developer infrastructure for AI agents.
-- It helps engineering teams inspect, evaluate, benchmark, and improve agent behavior.
-- The product direction centers on execution visibility and confidence, not on being another model wrapper.
+- Runloop is an AI eval system for agentic applications.
+- It helps engineering teams trace, evaluate, benchmark, and improve agent behavior.
+- The product direction centers on execution visibility and eval confidence, not on being another model wrapper.
 
 ## Who It Serves
 

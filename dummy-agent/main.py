@@ -47,7 +47,7 @@ def main() -> int:
     console.print(
         Panel.fit(
             (
-                "Agentry Dummy Agent\n\n"
+                "Runloop Dummy Agent\n\n"
                 f"Model: {settings.gemini_model}\n"
                 "Type a prompt and press Enter. Type `exit` or `quit` to leave."
             ),

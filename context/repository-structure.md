@@ -2,7 +2,7 @@
 
 ## Why A Monorepo
 
-- Agentry has multiple independent applications that still need a shared developer workflow.
+- Runloop has multiple independent applications that still need a shared developer workflow.
 - The monorepo keeps:
   - backend
   - dashboard
@@ -11,6 +11,7 @@
   - dummy agent
   - Supabase config
   - context docs
+  - Cursor Agent Skills
   in one place without forcing them into one runtime or package manager.
 
 ## Root Directories
@@ -31,6 +32,10 @@
   - CLI config, migrations, and seed data
 - `context/`
   - canonical architecture and workflow docs
+- `skills/`
+  - Cursor Agent Skills for repo-specific workflows (wired via `.cursor/skills/`)
+- `.cursor/`
+  - Cursor rules and symlink to `skills/`
 - `.githooks/`
   - shared Git hooks
 
@@ -76,6 +81,13 @@
 - the change affects workflow
 - the change changes terminology
 - the change introduces a new long-lived subsystem
+
+### Put Skills In `skills/` When
+
+- you are adding a Cursor Agent Skill from online or authoring one for this repo
+- you want reusable AI workflow instructions shared with the team
+
+Each skill is a folder with a `SKILL.md` file. See `skills/README.md`.
 
 ## Frontend Substructure
 

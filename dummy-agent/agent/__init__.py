@@ -1,1 +1,1 @@
-"""Reference dummy agent for local Agentry development and demos."""
+"""Reference dummy agent for local Runloop development and demos."""

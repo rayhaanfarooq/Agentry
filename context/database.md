@@ -2,7 +2,7 @@
 
 ## Purpose
 
-- Supabase provides Agentry's managed PostgreSQL infrastructure.
+- Supabase provides Runloop's managed PostgreSQL infrastructure.
 - SQLAlchemy remains the application-facing persistence layer.
 - Database architecture should support long-term observability and evaluation workflows without coupling business logic to Supabase SDKs.
 

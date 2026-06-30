@@ -3,7 +3,7 @@
 ## Purpose
 
 - The dashboard is a React + TypeScript application.
-- It is the authenticated product surface for Agentry workflows.
+- It is the authenticated product surface for Runloop workflows.
 - Today it proves and exercises:
   - application shell
   - backend health checks

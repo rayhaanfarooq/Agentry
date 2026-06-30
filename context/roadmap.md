@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Agentry already has the core repository foundation in place.
+- Runloop already has the core repository foundation in place.
 - The current milestone adds an AI-native context system so new contributors and coding agents can understand the repo quickly.
 
 ## Completed Milestones

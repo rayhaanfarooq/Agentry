@@ -1,6 +1,6 @@
-# Agentry Landing Page
+# Runloop Landing Page
 
-Separate React + TypeScript marketing site scaffold for Agentry.
+Separate React + TypeScript marketing site scaffold for Runloop.
 
 ## Purpose
 

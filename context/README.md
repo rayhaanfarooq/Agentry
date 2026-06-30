@@ -1,8 +1,8 @@
-# Agentry Context
+# Runloop Context
 
 ## Purpose
 
-- `context/` is the canonical onboarding layer for Agentry.
+- `context/` is the canonical onboarding layer for Runloop.
 - It exists for both human engineers and autonomous coding agents.
 - The goal is fast retrieval, not long-form prose.
 
@@ -23,7 +23,7 @@
 ## Document Index
 
 - [architecture.md](./architecture.md)
-  - Answers: "How does Agentry work end to end?"
+  - Answers: "How does Runloop work end to end?"
 - [backend.md](./backend.md)
   - Answers: "How is the FastAPI backend organized?"
 - [frontend.md](./frontend.md)
@@ -35,7 +35,7 @@
 - [developer-workflow.md](./developer-workflow.md)
   - Answers: "How do I run, lint, test, and ship changes?"
 - [project-vision.md](./project-vision.md)
-  - Answers: "What is Agentry trying to become?"
+  - Answers: "What is Runloop trying to become?"
 - [repository-structure.md](./repository-structure.md)
   - Answers: "Where should new code live?"
 - [technology.md](./technology.md)

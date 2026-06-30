@@ -38,7 +38,7 @@ export function DashboardPage() {
       <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <EmptyState
           title="Traces will appear here once the SDK is connected."
-          description="After backend instrumentation is wired up, Agentry will show agent traces, tool calls, and execution metadata in this space."
+          description="After backend instrumentation is wired up, Runloop will show agent traces, tool calls, and execution metadata in this space."
           icon={<Network className="h-5 w-5" />}
         />
 

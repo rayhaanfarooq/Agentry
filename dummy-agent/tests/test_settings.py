@@ -13,8 +13,8 @@ def test_settings_reject_placeholder_keys() -> None:
         Settings.model_validate(
             {
                 "GEMINI_API_KEY": "your-gemini-api-key",
-                "AGENTRY_API_URL": "http://localhost:8000",
-                "AGENTRY_API_KEY": "your-agentry-api-key",
+                "RUNLOOP_API_URL": "http://localhost:8000",
+                "RUNLOOP_API_KEY": "your-runloop-api-key",
             }
         )
 
@@ -23,8 +23,8 @@ def test_settings_accept_valid_values() -> None:
     settings = Settings.model_validate(
         {
             "GEMINI_API_KEY": "real-gemini-key",
-            "AGENTRY_API_URL": "http://localhost:8000",
-            "AGENTRY_API_KEY": "real-agentry-key",
+            "RUNLOOP_API_URL": "http://localhost:8000",
+            "RUNLOOP_API_KEY": "real-runloop-key",
         }
     )
 

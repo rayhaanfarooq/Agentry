@@ -1,6 +1,6 @@
-# Agentry Frontend
+# Runloop Frontend
 
-Phase 1 dashboard scaffold for Agentry.
+Phase 1 dashboard scaffold for Runloop.
 
 ## Highlights
 

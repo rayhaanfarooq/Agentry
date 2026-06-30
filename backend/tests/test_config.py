@@ -19,7 +19,7 @@ def test_settings_reject_placeholder_supabase_url() -> None:
     with pytest.raises(ValidationError):
         Settings.model_validate(
             {
-                "DATABASE_URL": "postgresql://postgres:password@localhost:5432/agentry",
+                "DATABASE_URL": "postgresql://postgres:password@localhost:5432/runloop",
                 "SUPABASE_URL": "https://your-project.supabase.co",
                 "SUPABASE_ANON_KEY": "local-anon-key",
                 "SUPABASE_SERVICE_ROLE_KEY": "local-service-role-key",
@@ -39,7 +39,7 @@ def test_settings_reject_placeholder_supabase_keys(
     value: str,
 ) -> None:
     settings_input = {
-        "DATABASE_URL": "postgresql://postgres:password@localhost:5432/agentry",
+        "DATABASE_URL": "postgresql://postgres:password@localhost:5432/runloop",
         "SUPABASE_URL": "http://127.0.0.1:54321",
         "SUPABASE_ANON_KEY": "local-anon-key",
         "SUPABASE_SERVICE_ROLE_KEY": "local-service-role-key",
@@ -53,7 +53,7 @@ def test_settings_reject_placeholder_supabase_keys(
 def test_settings_build_async_database_url_from_standard_postgres_url() -> None:
     settings = Settings.model_validate(
         {
-            "DATABASE_URL": "postgresql://postgres:password@localhost:5432/agentry",
+            "DATABASE_URL": "postgresql://postgres:password@localhost:5432/runloop",
             "SUPABASE_URL": "http://127.0.0.1:54321",
             "SUPABASE_ANON_KEY": "local-anon-key",
             "SUPABASE_SERVICE_ROLE_KEY": "local-service-role-key",
@@ -61,5 +61,5 @@ def test_settings_build_async_database_url_from_standard_postgres_url() -> None:
     )
 
     assert settings.async_database_url == (
-        "postgresql+asyncpg://postgres:password@localhost:5432/agentry"
+        "postgresql+asyncpg://postgres:password@localhost:5432/runloop"
     )

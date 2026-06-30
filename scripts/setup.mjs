@@ -125,19 +125,19 @@ function warnAboutDummyAgentPlaceholder() {
       placeholder: "your-gemini-api-key",
     },
     {
-      key: "AGENTRY_API_URL",
-      value: envValues.AGENTRY_API_URL ?? "",
+      key: "RUNLOOP_API_URL",
+      value: envValues.RUNLOOP_API_URL ?? "",
       placeholder: "",
     },
     {
-      key: "AGENTRY_API_KEY",
-      value: envValues.AGENTRY_API_KEY ?? "",
-      placeholder: "your-agentry-api-key",
+      key: "RUNLOOP_API_KEY",
+      value: envValues.RUNLOOP_API_KEY ?? "",
+      placeholder: "your-runloop-api-key",
     },
   ].filter(
     ({ key, value, placeholder }) =>
-      (key !== "AGENTRY_API_URL" && (value.length === 0 || value.includes(placeholder))) ||
-      (key === "AGENTRY_API_URL" && value.length === 0),
+      (key !== "RUNLOOP_API_URL" && (value.length === 0 || value.includes(placeholder))) ||
+      (key === "RUNLOOP_API_URL" && value.length === 0),
   );
 
   if (unresolvedVariables.length > 0) {
@@ -154,8 +154,8 @@ async function main() {
 
   logInfo(
     isPostinstall
-      ? "Installing Agentry application dependencies from root postinstall."
-      : "Installing Agentry application dependencies.",
+      ? "Installing Runloop application dependencies from root postinstall."
+      : "Installing Runloop application dependencies.",
   );
 
   ensureEnvFiles();

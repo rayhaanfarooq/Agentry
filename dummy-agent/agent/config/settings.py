@@ -15,11 +15,11 @@ class Settings(BaseModel):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     gemini_api_key: str = Field(alias="GEMINI_API_KEY")
-    agentry_api_url: HttpUrl = Field(alias="AGENTRY_API_URL")
-    agentry_api_key: str = Field(alias="AGENTRY_API_KEY")
+    runloop_api_url: HttpUrl = Field(alias="RUNLOOP_API_URL")
+    runloop_api_key: str = Field(alias="RUNLOOP_API_KEY")
     gemini_model: str = "gemini-2.5-flash"
 
-    @field_validator("gemini_api_key", "agentry_api_key", mode="before")
+    @field_validator("gemini_api_key", "runloop_api_key", mode="before")
     @classmethod
     def validate_api_keys(cls, value: str) -> str:
         normalized_value = value.strip()
@@ -29,7 +29,7 @@ class Settings(BaseModel):
 
         placeholder_values = {
             "your-gemini-api-key",
-            "your-agentry-api-key",
+            "your-runloop-api-key",
         }
         if normalized_value in placeholder_values:
             raise ValueError("API keys still contain placeholder values.")

@@ -44,9 +44,9 @@ def create_application() -> FastAPI:
     application = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        summary="Backend foundation for the Agentry platform.",
+        summary="Backend foundation for the Runloop platform.",
         description=(
-            "Production-ready FastAPI scaffold for Agentry, designed to support "
+            "Production-ready FastAPI scaffold for Runloop, designed to support "
             "future tracing, evaluations, debugging, and "
             "developer infrastructure features."
         ),

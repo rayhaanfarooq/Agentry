@@ -12,7 +12,7 @@ from sqlalchemy.pool import StaticPool
 def backend_settings() -> Settings:
     return Settings.model_validate(
         {
-            "DATABASE_URL": "postgresql://postgres:password@localhost:5432/agentry",
+            "DATABASE_URL": "postgresql://postgres:password@localhost:5432/runloop",
             "SUPABASE_URL": "http://127.0.0.1:54321",
             "SUPABASE_ANON_KEY": "local-anon-key",
             "SUPABASE_SERVICE_ROLE_KEY": "local-service-role-key",

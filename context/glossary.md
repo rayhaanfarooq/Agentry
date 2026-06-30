@@ -2,7 +2,7 @@
 
 ## Agent
 
-- An AI-powered application or workflow that Agentry helps developers inspect and improve.
+- An AI-powered application or workflow that Runloop helps developers inspect and improve.
 
 ## Trace
 
@@ -31,11 +31,11 @@
 
 ## Evaluation
 
-- A future Agentry feature for scoring or validating agent behavior against defined expectations.
+- A future Runloop feature for scoring or validating agent behavior against defined expectations.
 
 ## Memory Analysis
 
-- A future Agentry feature focused on understanding retrieved context, chunk relevance, and prompt context composition.
+- A future Runloop feature focused on understanding retrieved context, chunk relevance, and prompt context composition.
 
 ## Project
 
@@ -47,7 +47,7 @@
 
 ## SDK
 
-- A developer-facing library used to instrument applications and send trace data to Agentry.
+- A developer-facing library used to instrument applications and send trace data to Runloop.
 
 ## Dummy Agent
 
@@ -71,7 +71,7 @@
 
 ## Supabase
 
-- Agentry's infrastructure provider for managed PostgreSQL today and future Auth/Storage capabilities.
+- Runloop's infrastructure provider for managed PostgreSQL today and future Auth/Storage capabilities.
 
 ## Context System
 

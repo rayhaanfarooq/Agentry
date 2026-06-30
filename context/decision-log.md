@@ -31,7 +31,7 @@
 - Decision
   - Use Supabase for PostgreSQL, migrations, and future Auth/Storage support.
 - Reasoning
-  - Agentry needs managed infrastructure without giving up backend architecture control.
+  - Runloop needs managed infrastructure without giving up backend architecture control.
 - Alternatives Considered
   - plain hosted Postgres without Supabase
   - full Supabase SDK coupling

@@ -1,6 +1,6 @@
-# Agentry Backend
+# Runloop Backend
 
-Production-ready FastAPI backend scaffold for Agentry.
+Production-ready FastAPI backend scaffold for Runloop.
 
 ## Highlights
 
@@ -38,7 +38,7 @@ backend/
 ```
 
 Supabase CLI configuration and migrations live in the repository root under
-`/Users/rayhaanfarooq/Desktop/Agentry/supabase`.
+`/Users/rayhaanfarooq/Desktop/Runloop/supabase`.
 
 ## Environment
 
@@ -52,7 +52,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 PORT=8000
 ENVIRONMENT=development
 LOG_LEVEL=INFO
-APP_NAME=Agentry
+APP_NAME=Runloop
 APP_VERSION=0.0.1
 ```
 

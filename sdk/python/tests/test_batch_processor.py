@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
-from agentry.models import TraceBatch, TraceRecord
-from agentry.transport import BatchProcessor
+from runloop.models import TraceBatch, TraceRecord
+from runloop.transport import BatchProcessor
 
 
 class FakeTransport:

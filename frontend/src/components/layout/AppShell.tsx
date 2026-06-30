@@ -71,7 +71,7 @@ export function AppShell() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Agentry
+                Runloop
               </p>
               <h1 className="text-base font-semibold text-slate-950">
                 Dashboard
@@ -135,7 +135,7 @@ export function AppShell() {
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               Routing, API connectivity, and UI structure are ready for future
-              Agentry product surfaces.
+              Runloop product surfaces.
             </p>
           </div>
         </aside>
