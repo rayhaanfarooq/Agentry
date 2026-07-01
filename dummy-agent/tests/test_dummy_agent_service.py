@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 from agent.config.settings import Settings
 from agent.models.chat import LLMResponse
 from agent.services.dummy_agent import DummyAgentService
@@ -101,7 +102,9 @@ def test_dummy_agent_service_returns_model_reply(tmp_path: Path) -> None:
     assert trace.spans[0].span_type == "llm"
 
 
-def test_configure_monitor_uses_settings_and_env(monkeypatch) -> None:
+def test_configure_monitor_uses_settings_and_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("RUNLOOP_SERVICE_NAME", "custom-agent")
     monkeypatch.setenv("RUNLOOP_ENVIRONMENT", "staging")
 
