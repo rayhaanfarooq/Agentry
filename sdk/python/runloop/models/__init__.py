@@ -1,5 +1,6 @@
 from runloop.models.payload import (
     ErrorInfo,
+    ModelInfo,
     SDKInfo,
     SpanRecord,
     TraceBatch,
@@ -9,6 +10,7 @@ from runloop.models.payload import (
 
 __all__ = [
     "ErrorInfo",
+    "ModelInfo",
     "SDKInfo",
     "SpanRecord",
     "TraceBatch",

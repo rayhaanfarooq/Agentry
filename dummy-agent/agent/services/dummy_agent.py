@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Protocol
 
+from runloop import monitor
+
 from agent.config.settings import Settings, get_settings
 from agent.llm.gemini import GeminiService
 from agent.models.chat import AgentReply, LLMResponse
@@ -45,17 +47,26 @@ class DummyAgentService:
         if tool_lines:
             composed_prompt = f"{composed_prompt}\n\nAvailable tools:\n{tool_lines}"
 
-        llm_response = self.llm_service.generate_response(
-            user_prompt=user_prompt,
-            system_prompt=composed_prompt,
-        )
+        with monitor.trace("dummy_agent_prompt") as trace:
+            with monitor.span(
+                "llm_call",
+                metadata={"provider": "google", "span_type": "llm"},
+            ):
+                llm_response = self.llm_service.generate_response(
+                    user_prompt=user_prompt,
+                    system_prompt=composed_prompt,
+                )
 
-        return AgentReply(
-            prompt=user_prompt,
-            response=llm_response.text,
-            model=llm_response.model,
-            available_tools=[tool.name for tool in tool_catalog],
-        )
+            trace.set_inputs({"prompt": user_prompt})
+            trace.set_outputs({"response": llm_response.text})
+            trace.set_model(name=llm_response.model, provider="google")
+
+            return AgentReply(
+                prompt=user_prompt,
+                response=llm_response.text,
+                model=llm_response.model,
+                available_tools=[tool.name for tool in tool_catalog],
+            )
 
 
 def build_dummy_agent_service(settings: Settings | None = None) -> DummyAgentService:

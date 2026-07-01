@@ -6,6 +6,7 @@ import sys
 from agent.config import get_settings
 from agent.llm import GeminiServiceError
 from agent.services import build_dummy_agent_service
+from agent.tracing import configure_monitor, flush_monitor
 from agent.utils import configure_logging
 from pydantic import ValidationError
 from rich.console import Console
@@ -22,6 +23,7 @@ def main() -> int:
 
     try:
         settings = get_settings()
+        configure_monitor(settings)
         agent_service = build_dummy_agent_service(settings=settings)
     except ValidationError as error:
         logger.error("Environment validation failed: %s", error)
@@ -61,6 +63,7 @@ def main() -> int:
             user_prompt = Prompt.ask("[bold cyan]You[/]").strip()
         except (EOFError, KeyboardInterrupt):
             console.print("\n[bold yellow]Session ended.[/]")
+            flush_monitor()
             return 0
 
         if not user_prompt:
@@ -69,6 +72,7 @@ def main() -> int:
 
         if user_prompt.lower() in {"exit", "quit"}:
             console.print("[bold green]Goodbye.[/]")
+            flush_monitor()
             return 0
 
         try:
@@ -82,6 +86,7 @@ def main() -> int:
                     border_style="red",
                 )
             )
+            flush_monitor()
             continue
         except Exception:
             logger.exception("Unexpected failure while processing prompt.")
@@ -92,6 +97,7 @@ def main() -> int:
                     border_style="red",
                 )
             )
+            flush_monitor()
             continue
 
         console.print(
@@ -101,6 +107,7 @@ def main() -> int:
                 border_style="green",
             )
         )
+        flush_monitor()
 
 
 if __name__ == "__main__":

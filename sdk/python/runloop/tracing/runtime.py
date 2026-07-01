@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from runloop.models import SpanRecord
+from runloop.models import ModelInfo, SpanRecord
 
 
 @dataclass
@@ -13,6 +13,9 @@ class ActiveTrace:
     name: str
     started_at: datetime
     metadata: dict[str, Any]
+    inputs: dict[str, Any] | None = None
+    outputs: dict[str, Any] | None = None
+    model: ModelInfo | None = None
     spans: list[SpanRecord] = field(default_factory=list)
 
 
@@ -24,3 +27,4 @@ class ActiveSpan:
     name: str
     started_at: datetime
     metadata: dict[str, Any]
+    span_type: str | None = None

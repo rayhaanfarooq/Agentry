@@ -12,11 +12,17 @@ class ErrorInfo(BaseModel):
     message: str
 
 
+class ModelInfo(BaseModel):
+    name: str | None = None
+    provider: str | None = None
+    temperature: float | None = None
+
+
 class SpanRecord(BaseModel):
     span_id: str
-    trace_id: str
     parent_span_id: str | None = None
     name: str
+    span_type: str | None = None
     started_at: str
     ended_at: str
     duration_ms: float
@@ -35,6 +41,9 @@ class TraceRecord(BaseModel):
     duration_ms: float
     status: TraceStatus
     metadata: dict[str, Any] = Field(default_factory=dict)
+    inputs: dict[str, Any] | None = None
+    outputs: dict[str, Any] | None = None
+    model: ModelInfo | None = None
     error: ErrorInfo | None = None
     spans: list[SpanRecord] = Field(default_factory=list)
 

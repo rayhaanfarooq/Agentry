@@ -6,7 +6,7 @@ from types import TracebackType
 from typing import Any, Literal
 
 from runloop.context.state import SpanActivation, TraceActivation
-from runloop.models import ErrorInfo, SpanRecord, TraceRecord, TraceStatus
+from runloop.models import ErrorInfo, ModelInfo, SpanRecord, TraceRecord, TraceStatus
 from runloop.tracing.runtime import ActiveSpan, ActiveTrace
 from runloop.utils.ids import generate_span_id, generate_trace_id
 from runloop.utils.time import duration_ms, utc_now, utc_now_iso
@@ -24,6 +24,28 @@ class ManagedScope:
     _trace_activation: TraceActivation | None = None
     _span_activation: SpanActivation | None = None
     _effective_kind: str | None = None
+
+    def set_inputs(self, inputs: dict[str, Any]) -> None:
+        active_trace = self._require_active_trace()
+        active_trace.inputs = dict(inputs)
+
+    def set_outputs(self, outputs: dict[str, Any]) -> None:
+        active_trace = self._require_active_trace()
+        active_trace.outputs = dict(outputs)
+
+    def set_model(
+        self,
+        *,
+        name: str | None = None,
+        provider: str | None = None,
+        temperature: float | None = None,
+    ) -> None:
+        active_trace = self._require_active_trace()
+        active_trace.model = ModelInfo(
+            name=name,
+            provider=provider,
+            temperature=temperature,
+        )
 
     def __enter__(self) -> ManagedScope:
         self._started_at = utc_now()
@@ -50,13 +72,21 @@ class ManagedScope:
             raise RuntimeError("Cannot create a span without an active trace.")
 
         parent_span = self.monitor.context_store().current_span()
+        span_metadata = dict(self.metadata)
+        span_type = span_metadata.pop("span_type", None)
+        if isinstance(span_type, str):
+            normalized_span_type = span_type.strip() or None
+        else:
+            normalized_span_type = None
+
         self._active_span = ActiveSpan(
             span_id=generate_span_id(),
             trace_id=current_trace.trace_id,
             parent_span_id=parent_span.span_id if parent_span else None,
             name=self.name,
             started_at=self._started_at,
-            metadata=dict(self.metadata),
+            metadata=span_metadata,
+            span_type=normalized_span_type,
         )
         self._span_activation = self.monitor.context_store().activate_span(
             self._active_span
@@ -79,9 +109,9 @@ class ManagedScope:
                 current_trace.spans.append(
                     SpanRecord(
                         span_id=self._active_span.span_id,
-                        trace_id=self._active_span.trace_id,
                         parent_span_id=self._active_span.parent_span_id,
                         name=self._active_span.name,
+                        span_type=self._active_span.span_type,
                         started_at=utc_now_iso(self._active_span.started_at),
                         ended_at=utc_now_iso(ended_at),
                         duration_ms=duration_ms(self._active_span.started_at, ended_at),
@@ -107,6 +137,9 @@ class ManagedScope:
                 duration_ms=duration_ms(self._active_trace.started_at, ended_at),
                 status=status,
                 metadata=self._active_trace.metadata,
+                inputs=self._active_trace.inputs,
+                outputs=self._active_trace.outputs,
+                model=self._active_trace.model,
                 error=error,
                 spans=list(self._active_trace.spans),
             )
@@ -116,6 +149,13 @@ class ManagedScope:
                 self.monitor.context_store().deactivate_trace(self._trace_activation)
 
         return False
+
+    def _require_active_trace(self) -> ActiveTrace:
+        if self._active_trace is None:
+            raise RuntimeError(
+                "Cannot set trace fields outside of an active trace scope."
+            )
+        return self._active_trace
 
     def _build_error(self, exc: BaseException | None) -> ErrorInfo | None:
         if exc is None:
