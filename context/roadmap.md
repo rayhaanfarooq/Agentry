@@ -9,7 +9,7 @@
 
 - Monorepo foundation with independent root applications
 - Root developer workflow scripts
-- Supabase-first local and hosted database workflow
+- Supabase-first hosted database workflow
 - FastAPI backend scaffold
 - Health endpoint with PostgreSQL and Supabase checks
 - Landing page scaffold and design system direction

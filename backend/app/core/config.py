@@ -15,6 +15,20 @@ DEFAULT_CORS_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
+LOCAL_SUPABASE_ERROR = (
+    "Runloop uses hosted Supabase only. Local Supabase URLs are not supported."
+)
+
+
+def _looks_like_local_supabase_database_url(value: str) -> bool:
+    lowered = value.lower()
+    return "127.0.0.1:54322" in lowered or "localhost:54322" in lowered
+
+
+def _looks_like_local_supabase_url(value: str) -> bool:
+    lowered = value.lower()
+    return "127.0.0.1:54321" in lowered or "localhost:54321" in lowered
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -85,6 +99,9 @@ class Settings(BaseSettings):
                 "from .env.example."
             )
 
+        if _looks_like_local_supabase_database_url(normalized_value):
+            raise ValueError(LOCAL_SUPABASE_ERROR)
+
         return normalized_value
 
     @field_validator("supabase_url", mode="before")
@@ -98,6 +115,15 @@ class Settings(BaseSettings):
         if "your-project.supabase.co" in normalized_value:
             raise ValueError(
                 "SUPABASE_URL is still using the placeholder host from .env.example."
+            )
+
+        if _looks_like_local_supabase_url(normalized_value):
+            raise ValueError(LOCAL_SUPABASE_ERROR)
+
+        if not normalized_value.startswith("https://"):
+            raise ValueError(
+                "SUPABASE_URL must be a hosted HTTPS URL such as "
+                "https://your-project-ref.supabase.co."
             )
 
         return normalized_value

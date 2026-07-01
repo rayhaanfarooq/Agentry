@@ -3,11 +3,10 @@
 ## First-Time Setup
 
 1. Run `npm install` at the repository root.
-2. Choose a database mode:
-   - local Supabase
-   - hosted Supabase
-3. Copy or update each app's `.env` file from its `.env.example`.
-4. Start development services with `npm run dev`.
+2. Create or choose a hosted Supabase project.
+3. Copy hosted credentials into `backend/.env` from `backend/.env.example`.
+4. Link the repo and apply migrations with `npm run supabase:link` and `npm run supabase:db:push`.
+5. Start development services with `npm run dev`.
 
 ## Daily Commands
 
@@ -54,24 +53,12 @@
 
 ## Supabase Workflow
 
-### Local
-
-- `npm run supabase:start`
-- `npm run supabase:status:env`
-- `npm run supabase:db:reset`
-- `npm run supabase:migration:up`
-
-### Schema Changes
-
-- create a migration shell
-  - `npm run supabase:migration:new -- <name>`
-- diff local schema into SQL
-  - `npm run supabase:db:diff -- --local -f <name>`
-
-### Hosted Project
+Runloop uses hosted Supabase only.
 
 - `npm run supabase:login`
 - `npm run supabase:link -- --project-ref <ref>`
+- `npm run supabase:migration:new -- <name>`
+- `npm run supabase:db:diff -- -f <name>`
 - `npm run supabase:db:pull -- <name>`
 - `npm run supabase:db:push`
 

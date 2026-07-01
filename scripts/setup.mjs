@@ -86,31 +86,38 @@ function warnAboutBackendPlaceholder() {
       key: "DATABASE_URL",
       value: envValues.DATABASE_URL ?? "",
       placeholder: "db.example.supabase.co",
+      localIndicators: ["127.0.0.1:54322", "localhost:54322", "YOUR_DB_PASSWORD", "YOUR_PROJECT_REF"],
     },
     {
       key: "SUPABASE_URL",
       value: envValues.SUPABASE_URL ?? "",
       placeholder: "your-project.supabase.co",
+      localIndicators: ["127.0.0.1:54321", "localhost:54321", "YOUR_PROJECT_REF"],
     },
     {
       key: "SUPABASE_ANON_KEY",
       value: envValues.SUPABASE_ANON_KEY ?? "",
       placeholder: "your-anon-key",
+      localIndicators: [],
     },
     {
       key: "SUPABASE_SERVICE_ROLE_KEY",
       value: envValues.SUPABASE_SERVICE_ROLE_KEY ?? "",
       placeholder: "your-service-role-key",
+      localIndicators: [],
     },
   ].filter(
-    ({ value, placeholder }) => value.length === 0 || value.includes(placeholder),
+    ({ value, placeholder, localIndicators }) =>
+      value.length === 0 ||
+      value.includes(placeholder) ||
+      localIndicators.some((indicator) => value.includes(indicator)),
   );
 
   if (unresolvedVariables.length > 0) {
     logWarning(
-      `backend/.env still has unresolved Supabase settings (${unresolvedVariables
+      `backend/.env still has unresolved hosted Supabase settings (${unresolvedVariables
         .map(({ key }) => key)
-        .join(", ")}). Update them before expecting a healthy backend. Use \`npm run supabase:status:env\` when working against local Supabase.`,
+        .join(", ")}). Copy values from the Supabase dashboard into backend/.env, then run \`npm run supabase:link\` and \`npm run supabase:db:push\` to apply migrations.`,
     );
   }
 }

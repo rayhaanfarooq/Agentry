@@ -9,8 +9,7 @@
 ## Ownership Model
 
 - Supabase owns:
-  - PostgreSQL hosting
-  - local development stack
+  - hosted PostgreSQL
   - migration workflow
   - future Auth and Storage infrastructure
 - FastAPI owns:
@@ -24,6 +23,7 @@
 - Only `DATABASE_URL` is used for SQLAlchemy CRUD access.
 - Repositories talk to the database through async SQLAlchemy sessions.
 - Services depend on repositories, not raw sessions.
+- The backend rejects local Supabase URLs and requires a hosted HTTPS `SUPABASE_URL`.
 
 ## Current Schema Focus
 
@@ -48,22 +48,22 @@
 ## Migration Workflow
 
 - Migrations live in `supabase/migrations/`.
-- Supabase CLI is the migration system of record.
+- Supabase CLI is the migration system of record against a linked hosted project.
 - Alembic is intentionally not used.
 - Common commands:
+  - `npm run supabase:login`
+  - `npm run supabase:link -- --project-ref <ref>`
   - `npm run supabase:migration:new -- <name>`
-  - `npm run supabase:db:diff -- --local -f <name>`
-  - `npm run supabase:db:reset`
-  - `npm run supabase:migration:up`
+  - `npm run supabase:db:diff -- -f <name>`
+  - `npm run supabase:db:pull -- <name>`
   - `npm run supabase:db:push`
 
-## Local Development
+## Hosted Setup
 
-- `npm run supabase:start`
-  - starts local Supabase services
-- `npm run supabase:status:env`
-  - prints local URLs and keys for `.env`
-- The backend then points SQLAlchemy at the reported `DATABASE_URL`.
+1. Create a Supabase project.
+2. Copy `DATABASE_URL`, `SUPABASE_URL`, publishable key, and secret key into `backend/.env`.
+3. Link the repo with `npm run supabase:link`.
+4. Apply migrations with `npm run supabase:db:push`.
 
 ## Modeling Principles
 
@@ -88,6 +88,7 @@
 - Do not put business logic into ad hoc SQL functions unless there is a strong reason.
 - Do not couple frontend code to Supabase database primitives.
 - Do not bypass repositories from services or routes.
+- Do not configure local Supabase endpoints in application env files.
 
 ## Read Next
 

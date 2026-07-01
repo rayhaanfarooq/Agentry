@@ -15,7 +15,7 @@ evaluations, and observability.
 - `context/`: Focused architecture and workflow documents for human and AI onboarding
 - `skills/`: Cursor Agent Skills you can add from online or author for this repo
 - `scripts/`: Root developer workflow commands for install, dev, lint, format, typecheck, and test
-- `supabase/`: Supabase CLI project configuration, migrations, and local development settings
+- `supabase/`: Supabase CLI migrations and hosted project linkage
 
 Each application remains independent, with its own dependencies, environment
 file, and build process. The root of the repo exists to orchestrate them
@@ -47,7 +47,7 @@ runloop/
 - Landing page: React, TypeScript, Vite
 - Dummy agent: Python 3.12+, Pydantic, python-dotenv, HTTPX, Rich
 - Python SDK: Python 3.12+, Pydantic, HTTPX, contextvars, background batching
-- Database and infrastructure: Supabase PostgreSQL, Supabase CLI, and local Supabase services
+- Database and infrastructure: hosted Supabase PostgreSQL and Supabase CLI migrations
 
 ## Context Docs
 
@@ -63,7 +63,7 @@ runloop/
 
 - Node.js 20+
 - Python 3.12+
-- Docker Desktop or another Docker runtime if you plan to use local Supabase
+- A hosted Supabase project (free tier is fine)
 
 ## Quick Start
 
@@ -87,23 +87,21 @@ runloop/
    - copies missing `.env` files from their `.env.example` templates
    - configures the Git pre-commit hook path
 
-2. Choose a database workflow:
+2. Configure hosted Supabase in `backend/.env`:
 
-   Local Supabase:
+   - Create a project at [supabase.com](https://supabase.com)
+   - Copy `DATABASE_URL`, `SUPABASE_URL`, publishable key, and secret key from the dashboard
+   - See `backend/.env.example` for the expected format
+
+3. Link the repo and apply migrations:
 
    ```bash
-   npm run supabase:start
-   npm run supabase:status:env
+   npm run supabase:login
+   npm run supabase:link -- --project-ref your-project-ref
+   npm run supabase:db:push
    ```
 
-   Copy the reported values into `backend/.env`.
-
-   Hosted Supabase:
-
-   Update `backend/.env` with your project `DATABASE_URL`, `SUPABASE_URL`,
-   `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
-
-3. Start the entire platform:
+4. Start the entire platform:
 
    ```bash
    npm run dev
@@ -128,8 +126,8 @@ Every app has its own `.env.example`.
 ### Backend
 
 ```bash
-DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
-SUPABASE_URL=http://127.0.0.1:54321
+DATABASE_URL=postgresql://postgres:YOUR_DB_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 PORT=8000
@@ -140,7 +138,8 @@ APP_VERSION=0.0.1
 ```
 
 `DATABASE_URL` remains the only database connection string used by SQLAlchemy.
-The Supabase URL and keys support infrastructure checks now and future
+`SUPABASE_URL` must be a hosted HTTPS project URL. Local Supabase URLs are rejected.
+The publishable and secret API keys support infrastructure checks now and future
 Auth/Storage integration later.
 
 ### Frontend
@@ -183,19 +182,13 @@ Run all commands from `/Users/rayhaanfarooq/Desktop/Runloop`.
 - `npm run dev:frontend`: start only the dashboard on port `5173`
 - `npm run dev:landing`: start only the landing page on port `3000`
 - `npm run dev:dummy-agent`: start the interactive Gemini reference agent
-- `npm run supabase:start`: start the local Supabase stack
-- `npm run supabase:stop`: stop the local Supabase stack
-- `npm run supabase:status`: inspect the local Supabase stack
-- `npm run supabase:status:env`: print local Supabase URLs and keys as env vars
-- `npm run supabase:migration:list`: list local and remote migration history
+- `npm run supabase:login`: authenticate the Supabase CLI
+- `npm run supabase:link -- --project-ref <ref>`: link this repo to your hosted Supabase project
+- `npm run supabase:migration:list`: list migration history for the linked project
 - `npm run supabase:migration:new -- <name>`: create an empty migration
-- `npm run supabase:db:diff -- --local -f <name>`: generate a migration from local schema changes
-- `npm run supabase:db:reset`: reset the local database and apply tracked migrations
-- `npm run supabase:migration:up`: apply pending migrations to the local database
-- `npm run supabase:login`: authenticate the CLI with Supabase
-- `npm run supabase:link -- --project-ref <ref>`: link this repo to a hosted Supabase project
+- `npm run supabase:db:diff -- -f <name>`: generate a migration from linked project schema changes
 - `npm run supabase:db:pull -- <name>`: pull schema changes from the linked project into a migration
-- `npm run supabase:db:push`: apply local migrations to the linked remote project
+- `npm run supabase:db:push`: apply local migrations to the linked hosted project
 - `npm run lint`: run Ruff, ESLint, and other lint checks across the repo
 - `npm run format`: run Python and Prettier formatting across the repo
 - `npm run typecheck`: run Mypy and TypeScript checks
@@ -209,30 +202,20 @@ not a background service.
 
 ## Supabase Workflow
 
-### Local Development
-
-```bash
-npm run supabase:start
-npm run supabase:status:env
-npm run supabase:migration:new -- add_projects
-npm run supabase:db:diff -- --local -f add_projects
-npm run supabase:db:reset
-npm run supabase:migration:up
-```
-
-### Hosted Project Workflow
+Runloop uses **hosted Supabase only**. Migrations live in `supabase/migrations/`.
 
 ```bash
 npm run supabase:login
 npm run supabase:link -- --project-ref your-project-ref
-npm run supabase:db:pull -- baseline_remote
+npm run supabase:migration:new -- add_projects
+npm run supabase:db:diff -- -f add_projects
 npm run supabase:db:push
 ```
 
 ## Development Workflow
 
 1. Run `npm install` after cloning.
-2. Start local Supabase with `npm run supabase:start` or point `backend/.env` at a hosted project.
+2. Point `backend/.env` at your hosted Supabase project and run `npm run supabase:db:push`.
 3. Use `npm run dev` for daily work.
 4. Use `npm run dev:dummy-agent` when you want to validate agent behavior locally.
 5. Create and apply schema changes through the Supabase CLI workflow in `supabase/migrations`.
