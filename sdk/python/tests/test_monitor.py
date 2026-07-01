@@ -150,3 +150,49 @@ def test_trace_scope_marks_error_when_exception_raised_inside_llm_span() -> None
     assert exported.error is not None
     assert exported.error.type == "RuntimeError"
     assert exported.spans[0].status == "error"
+
+
+def test_trace_scope_records_tool_call_linked_to_span() -> None:
+    transport = FakeTransport()
+    monitor = build_monitor(transport)
+
+    with monitor.trace("dummy_agent_prompt"):
+        with monitor.span("lookup", metadata={"span_type": "tool"}) as tool_span:
+            tool_span.set_tool_call(
+                arguments={"key": "pricing"},
+                result={"found": True, "value": "Pro plan"},
+            )
+
+    exported = transport.batches[0].traces[0]
+    assert len(exported.spans) == 1
+    assert exported.spans[0].name == "lookup"
+    assert exported.spans[0].span_type == "tool"
+    assert len(exported.tool_calls) == 1
+    tool_call = exported.tool_calls[0]
+    assert tool_call.name == "lookup"
+    assert tool_call.span_id == exported.spans[0].span_id
+    assert tool_call.arguments == {"key": "pricing"}
+    assert tool_call.result == {"found": True, "value": "Pro plan"}
+    assert tool_call.status == "ok"
+    assert "trace_id" not in tool_call.model_dump(mode="json")
+
+
+def test_trace_scope_marks_tool_call_error_when_span_raises() -> None:
+    transport = FakeTransport()
+    monitor = build_monitor(transport)
+
+    try:
+        with monitor.trace("dummy_agent_prompt"):
+            with monitor.span("compute", metadata={"span_type": "tool"}) as tool_span:
+                tool_span.set_tool_call(
+                    arguments={"expression": "1/0"},
+                    result={"error": "division by zero"},
+                )
+                raise ValueError("compute failed")
+    except ValueError:
+        pass
+
+    exported = transport.batches[0].traces[0]
+    assert exported.tool_calls[0].status == "error"
+    assert exported.tool_calls[0].error is not None
+    assert exported.tool_calls[0].error.type == "ValueError"

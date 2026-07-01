@@ -31,6 +31,20 @@ class SpanRecord(BaseModel):
     error: ErrorInfo | None = None
 
 
+class ToolCallRecord(BaseModel):
+    tool_call_id: str
+    span_id: str | None = None
+    name: str
+    started_at: str
+    ended_at: str
+    duration_ms: float
+    status: TraceStatus
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    arguments: dict[str, Any] | None = None
+    result: Any | None = None
+    error: ErrorInfo | None = None
+
+
 class TraceRecord(BaseModel):
     trace_id: str
     name: str
@@ -46,6 +60,7 @@ class TraceRecord(BaseModel):
     model: ModelInfo | None = None
     error: ErrorInfo | None = None
     spans: list[SpanRecord] = Field(default_factory=list)
+    tool_calls: list[ToolCallRecord] = Field(default_factory=list)
 
 
 class SDKInfo(BaseModel):

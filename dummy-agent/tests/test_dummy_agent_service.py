@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from agent.config.settings import Settings
-from agent.models.chat import LLMResponse
+from agent.models.chat import FunctionCall, LLMResponse
 from agent.services.dummy_agent import DummyAgentService
 from agent.services.prompts import PromptLoader
 from agent.tools import build_default_tool_registry
@@ -15,16 +15,33 @@ from runloop.transport import BatchProcessor
 
 
 class StubGeminiService:
-    def generate_response(
+    def __init__(self) -> None:
+        self._call_count = 0
+
+    def generate_with_tools(
         self,
         *,
-        user_prompt: str,
         system_prompt: str,
+        contents: list[dict],
+        tool_declarations: list[dict],
     ) -> LLMResponse:
+        del system_prompt, tool_declarations
+        self._call_count += 1
+
+        if self._call_count == 1:
+            return LLMResponse(
+                model="stub-model",
+                text=None,
+                function_calls=[
+                    FunctionCall(name="echo", args={"message": "Hello, Gemini"}),
+                ],
+                raw_response={"call": 1},
+            )
+
         return LLMResponse(
             model="stub-model",
-            text=f"Echo: {user_prompt}",
-            raw_response={"system_prompt_length": len(system_prompt)},
+            text="Echo: Hello, Gemini",
+            raw_response={"call": 2, "contents_length": len(contents)},
         )
 
 
@@ -86,7 +103,8 @@ def test_dummy_agent_service_returns_model_reply(tmp_path: Path) -> None:
     assert reply.prompt == "Hello, Gemini"
     assert reply.response == "Echo: Hello, Gemini"
     assert reply.model == "stub-model"
-    assert "calculator" in reply.available_tools
+    assert reply.tools_used == ["echo"]
+    assert "echo" in reply.available_tools
 
     assert len(transport.batches) == 1
     trace = transport.batches[0].traces[0]
@@ -97,9 +115,17 @@ def test_dummy_agent_service_returns_model_reply(tmp_path: Path) -> None:
     assert trace.model is not None
     assert trace.model.name == "stub-model"
     assert trace.model.provider == "google"
-    assert len(trace.spans) == 1
+    assert len(trace.spans) == 3
     assert trace.spans[0].name == "llm_call"
     assert trace.spans[0].span_type == "llm"
+    assert trace.spans[1].name == "echo"
+    assert trace.spans[1].span_type == "tool"
+    assert trace.spans[2].name == "llm_call"
+    assert len(trace.tool_calls) == 1
+    assert trace.tool_calls[0].name == "echo"
+    assert trace.tool_calls[0].span_id == trace.spans[1].span_id
+    assert trace.tool_calls[0].arguments == {"message": "Hello, Gemini"}
+    assert trace.tool_calls[0].result == {"message": "Hello, Gemini"}
 
 
 def test_configure_monitor_uses_settings_and_env(

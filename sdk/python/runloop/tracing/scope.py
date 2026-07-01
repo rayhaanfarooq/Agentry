@@ -6,9 +6,16 @@ from types import TracebackType
 from typing import Any, Literal
 
 from runloop.context.state import SpanActivation, TraceActivation
-from runloop.models import ErrorInfo, ModelInfo, SpanRecord, TraceRecord, TraceStatus
+from runloop.models import (
+    ErrorInfo,
+    ModelInfo,
+    SpanRecord,
+    ToolCallRecord,
+    TraceRecord,
+    TraceStatus,
+)
 from runloop.tracing.runtime import ActiveSpan, ActiveTrace
-from runloop.utils.ids import generate_span_id, generate_trace_id
+from runloop.utils.ids import generate_span_id, generate_tool_call_id, generate_trace_id
 from runloop.utils.time import duration_ms, utc_now, utc_now_iso
 
 
@@ -46,6 +53,22 @@ class ManagedScope:
             provider=provider,
             temperature=temperature,
         )
+
+    def set_tool_call(
+        self,
+        *,
+        arguments: dict[str, Any],
+        result: Any,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        if self._active_span is None:
+            raise RuntimeError(
+                "Cannot set tool call fields outside of an active span scope."
+            )
+        self._active_span.tool_call_arguments = dict(arguments)
+        self._active_span.tool_call_result = result
+        if metadata is not None:
+            self._active_span.tool_call_metadata = dict(metadata)
 
     def __enter__(self) -> ManagedScope:
         self._started_at = utc_now()
@@ -120,6 +143,27 @@ class ManagedScope:
                         error=error,
                     )
                 )
+                if self._active_span.tool_call_arguments is not None:
+                    tool_metadata = dict(self._active_span.metadata)
+                    if self._active_span.tool_call_metadata is not None:
+                        tool_metadata.update(self._active_span.tool_call_metadata)
+                    current_trace.tool_calls.append(
+                        ToolCallRecord(
+                            tool_call_id=generate_tool_call_id(),
+                            span_id=self._active_span.span_id,
+                            name=self._active_span.name,
+                            started_at=utc_now_iso(self._active_span.started_at),
+                            ended_at=utc_now_iso(ended_at),
+                            duration_ms=duration_ms(
+                                self._active_span.started_at, ended_at
+                            ),
+                            status=status,
+                            metadata=tool_metadata,
+                            arguments=self._active_span.tool_call_arguments,
+                            result=self._active_span.tool_call_result,
+                            error=error,
+                        )
+                    )
 
             if self._span_activation is not None:
                 self.monitor.context_store().deactivate_span(self._span_activation)
@@ -142,6 +186,7 @@ class ManagedScope:
                 model=self._active_trace.model,
                 error=error,
                 spans=list(self._active_trace.spans),
+                tool_calls=list(self._active_trace.tool_calls),
             )
             self.monitor.record_trace(trace_record)
 

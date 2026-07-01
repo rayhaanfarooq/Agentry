@@ -4,10 +4,9 @@ from collections.abc import Iterable
 
 from agent.models.tool import ToolDefinition
 from agent.tools.base import Tool
-from agent.tools.calculator import CalculatorTool
-from agent.tools.current_time import CurrentTimeTool
-from agent.tools.random_number import RandomNumberTool
-from agent.tools.weather import WeatherTool
+from agent.tools.compute import ComputeTool
+from agent.tools.echo import EchoTool
+from agent.tools.lookup import LookupTool
 
 
 class ToolRegistry:
@@ -24,9 +23,8 @@ class ToolRegistry:
 def build_default_tool_registry() -> ToolRegistry:
     return ToolRegistry(
         [
-            CurrentTimeTool(),
-            RandomNumberTool(),
-            WeatherTool(),
-            CalculatorTool(),
+            EchoTool(),
+            LookupTool(),
+            ComputeTool(),
         ]
     )

@@ -9,3 +9,7 @@ def generate_trace_id() -> str:
 
 def generate_span_id() -> str:
     return uuid4().hex
+
+
+def generate_tool_call_id() -> str:
+    return uuid4().hex

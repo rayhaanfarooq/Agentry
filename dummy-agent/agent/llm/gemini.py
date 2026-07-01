@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 
 from agent.config.settings import Settings
-from agent.models.chat import LLMResponse
+from agent.models.chat import FunctionCall, LLMResponse
 
 GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -31,21 +31,45 @@ class GeminiService:
         user_prompt: str,
         system_prompt: str,
     ) -> LLMResponse:
-        payload = {
+        return self.generate_with_tools(
+            system_prompt=system_prompt,
+            contents=[{"role": "user", "parts": [{"text": user_prompt}]}],
+            tool_declarations=[],
+        )
+
+    def generate_with_tools(
+        self,
+        *,
+        system_prompt: str,
+        contents: list[dict[str, Any]],
+        tool_declarations: list[dict[str, Any]],
+    ) -> LLMResponse:
+        payload: dict[str, Any] = {
             "system_instruction": {
                 "parts": [{"text": system_prompt}],
             },
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": user_prompt}],
-                }
-            ],
+            "contents": contents,
             "generationConfig": {
                 "temperature": 0.4,
             },
         }
+        if tool_declarations:
+            payload["tools"] = [{"functionDeclarations": tool_declarations}]
 
+        response_payload = self._post_generate_content(payload)
+        text, function_calls = self._extract_parts(response_payload)
+
+        if not text and not function_calls:
+            raise GeminiServiceError("Gemini returned neither text nor function calls.")
+
+        return LLMResponse(
+            model=self.settings.gemini_model,
+            text=text,
+            function_calls=function_calls,
+            raw_response=response_payload,
+        )
+
+    def _post_generate_content(self, payload: dict[str, Any]) -> dict[str, Any]:
         request_url = (
             f"{GEMINI_API_BASE_URL}/models/"
             f"{self.settings.gemini_model}:generateContent"
@@ -82,21 +106,15 @@ class GeminiService:
             raise GeminiServiceError(f"Gemini request failed: {error}") from error
 
         try:
-            response_payload = response.json()
+            response_payload: dict[str, Any] = response.json()
         except ValueError as error:
             raise GeminiServiceError("Gemini returned invalid JSON.") from error
 
-        response_text = self._extract_text(response_payload)
-        if not response_text:
-            raise GeminiServiceError("Gemini returned an empty response.")
+        return response_payload
 
-        return LLMResponse(
-            model=self.settings.gemini_model,
-            text=response_text,
-            raw_response=response_payload,
-        )
-
-    def _extract_text(self, payload: dict[str, Any]) -> str:
+    def _extract_parts(
+        self, payload: dict[str, Any]
+    ) -> tuple[str | None, list[FunctionCall]]:
         candidates = payload.get("candidates")
         if not isinstance(candidates, list) or not candidates:
             prompt_feedback = payload.get("promptFeedback", {})
@@ -113,9 +131,27 @@ class GeminiService:
         if not isinstance(parts, list):
             raise GeminiServiceError("Gemini response did not include content parts.")
 
-        text_parts = [
-            part.get("text", "").strip()
-            for part in parts
-            if isinstance(part, dict) and isinstance(part.get("text"), str)
-        ]
-        return "\n".join(part for part in text_parts if part)
+        text_parts: list[str] = []
+        function_calls: list[FunctionCall] = []
+
+        for part in parts:
+            if not isinstance(part, dict):
+                continue
+            if isinstance(part.get("text"), str):
+                stripped = part["text"].strip()
+                if stripped:
+                    text_parts.append(stripped)
+                continue
+            function_call = part.get("functionCall")
+            if isinstance(function_call, dict):
+                name = function_call.get("name")
+                if not isinstance(name, str) or not name.strip():
+                    raise GeminiServiceError(
+                        "Gemini function call did not include a tool name."
+                    )
+                raw_args = function_call.get("args", {})
+                args = raw_args if isinstance(raw_args, dict) else {}
+                function_calls.append(FunctionCall(name=name, args=args))
+
+        combined_text = "\n".join(text_parts).strip() or None
+        return combined_text, function_calls

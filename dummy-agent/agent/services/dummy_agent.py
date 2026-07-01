@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from runloop import monitor
 
@@ -9,15 +9,24 @@ from agent.config.settings import Settings, get_settings
 from agent.llm.gemini import GeminiService
 from agent.models.chat import AgentReply, LLMResponse
 from agent.services.prompts import PromptLoader
+from agent.services.tool_loop import (
+    MAX_TOOL_ITERATIONS,
+    ToolLoopExhaustedError,
+    ToolLoopNoResponseError,
+    append_function_exchange,
+    execute_tool_call,
+)
 from agent.tools import ToolRegistry, build_default_tool_registry
+from agent.tools.schema import build_gemini_function_declarations
 
 
 class LLMService(Protocol):
-    def generate_response(
+    def generate_with_tools(
         self,
         *,
-        user_prompt: str,
         system_prompt: str,
+        contents: list[dict[str, Any]],
+        tool_declarations: list[dict[str, Any]],
     ) -> LLMResponse: ...
 
 
@@ -35,37 +44,82 @@ class DummyAgentService:
 
     def run_prompt(self, user_prompt: str) -> AgentReply:
         system_prompt = self.prompt_loader.load("system.txt")
-        tool_catalog = self.tool_registry.list_tools()
-        tool_lines = "\n".join(
-            f"- {tool.name}: {tool.description}" for tool in tool_catalog
-        )
+        tool_declarations = build_gemini_function_declarations(self.tool_registry)
         composed_prompt = (
             f"{system_prompt}\n\n"
-            "Registered local tools exist for future tracing and demo flows, "
-            "but do not invoke or simulate tool calls yet."
+            "You have access to local tools. Use them when they help answer "
+            "the user accurately."
         )
-        if tool_lines:
-            composed_prompt = f"{composed_prompt}\n\nAvailable tools:\n{tool_lines}"
+        contents: list[dict[str, Any]] = [
+            {"role": "user", "parts": [{"text": user_prompt}]}
+        ]
+        tools_used: list[str] = []
+        final_text: str | None = None
+        model_name = ""
 
         with monitor.trace("dummy_agent_prompt") as trace:
-            with monitor.span(
-                "llm_call",
-                metadata={"provider": "google", "span_type": "llm"},
-            ):
-                llm_response = self.llm_service.generate_response(
-                    user_prompt=user_prompt,
-                    system_prompt=composed_prompt,
+            for _ in range(MAX_TOOL_ITERATIONS):
+                with monitor.span(
+                    "llm_call",
+                    metadata={"provider": "google", "span_type": "llm"},
+                ):
+                    llm_response = self.llm_service.generate_with_tools(
+                        system_prompt=composed_prompt,
+                        contents=contents,
+                        tool_declarations=tool_declarations,
+                    )
+                model_name = llm_response.model
+
+                if llm_response.function_calls:
+                    responses: list[dict[str, Any]] = []
+                    for function_call in llm_response.function_calls:
+                        with monitor.span(
+                            function_call.name,
+                            metadata={"span_type": "tool"},
+                        ) as tool_span:
+                            result, succeeded = execute_tool_call(
+                                registry=self.tool_registry,
+                                function_call=function_call,
+                            )
+                            tool_span.set_tool_call(
+                                arguments=function_call.args,
+                                result=result,
+                            )
+                            if succeeded:
+                                tools_used.append(function_call.name)
+                        responses.append(result)
+
+                    append_function_exchange(
+                        contents=contents,
+                        function_calls=llm_response.function_calls,
+                        responses=responses,
+                    )
+                    continue
+
+                if llm_response.text:
+                    final_text = llm_response.text
+                    break
+
+                raise ToolLoopNoResponseError(
+                    "Gemini returned neither text nor function calls."
+                )
+
+            if final_text is None:
+                raise ToolLoopExhaustedError(
+                    "Tool loop exceeded maximum iterations without a final answer."
                 )
 
             trace.set_inputs({"prompt": user_prompt})
-            trace.set_outputs({"response": llm_response.text})
-            trace.set_model(name=llm_response.model, provider="google")
+            trace.set_outputs({"response": final_text})
+            trace.set_model(name=model_name, provider="google")
 
+            tool_catalog = self.tool_registry.list_tools()
             return AgentReply(
                 prompt=user_prompt,
-                response=llm_response.text,
-                model=llm_response.model,
+                response=final_text,
+                model=model_name,
                 available_tools=[tool.name for tool in tool_catalog],
+                tools_used=tools_used,
             )
 
 

@@ -11,15 +11,16 @@ Runloop through the Python SDK and your local (or hosted) backend API.
 - loads environment variables from `.env`
 - validates required configuration immediately at startup
 - reads a prompt from the terminal
-- sends the prompt to Gemini
-- displays Gemini's response
+- sends the prompt to Gemini with native function calling enabled
+- executes local tools when Gemini requests them
+- displays Gemini's final response
 - emits one Runloop trace per prompt through the Python SDK
-- keeps a simple local tool registry ready for future tool-calling demos
 
 Each chat turn creates a trace named `dummy_agent_prompt` with:
 
 - user prompt and model response (Prompt Viewer in Trace Explorer)
-- nested `llm_call` span on the timeline
+- nested `llm_call` spans on the timeline
+- `tool` spans and `tool_calls` records when tools run
 - latency captured automatically by the SDK
 - model name and provider metadata
 
@@ -81,18 +82,33 @@ npm run dev:frontend     # terminal 2
 npm run dev:dummy-agent  # terminal 3
 ```
 
+## Generic Tools
+
+The agent registers three domain-agnostic local tools:
+
+| Tool | Purpose | Example prompt |
+|------|---------|----------------|
+| `echo` | Passthrough test | "Use echo with message hello" |
+| `lookup` | In-memory key lookup (`pricing`, `support`, `status`) | "Look up pricing" |
+| `compute` | Safe arithmetic eval | "Compute (2+3)*5" |
+
+Gemini decides when to call tools. Each invocation creates a tool span and a
+`tool_calls` record linked to that span.
+
 ## Verify Traces End-to-End
 
 1. Confirm backend health: `curl http://localhost:8000/health`
 2. Open Trace Explorer: http://localhost:5173/traces
-3. Run the dummy agent and submit one prompt
+3. Run the dummy agent and submit a prompt such as:
+   `Use lookup for pricing and compute 10 * 2`
 4. Refresh `/traces` — filter by service name `dummy-agent` if needed
 
 You should see:
 
 - a trace named `dummy_agent_prompt`
 - prompt + completion in Prompt Viewer
-- an `llm_call` span on the timeline
+- `llm_call` and tool spans on the timeline
+- tool arguments and results under **Tools & Events**
 - status `ok` and model `gemini-2.5-flash` (or your configured model)
 
 API check:
@@ -101,25 +117,10 @@ API check:
 curl -s "http://localhost:8000/v1/traces?service_name=dummy-agent" | python3 -m json.tool
 ```
 
-## Tool Registry
-
-The tool layer exists now so future Runloop features can produce realistic
-local traces.
-
-Registered tools:
-
-- `current_time`
-- `random_number`
-- `weather` (mock)
-- `calculator`
-
-These tools are not invoked by the initial chat loop yet.
-
 ## Future Integration
 
 This project is designed to make future additions straightforward, including:
 
 - evaluation runs
 - prompt version capture
-- tool call tracing
 - token usage capture from Gemini responses
