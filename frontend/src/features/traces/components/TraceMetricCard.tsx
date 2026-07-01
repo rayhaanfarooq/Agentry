@@ -19,18 +19,18 @@ export function TraceMetricCard({
 }: TraceMetricCardProps) {
   return (
     <Card>
-      <CardContent className="flex items-start gap-4 p-5">
+      <CardContent className="flex items-start gap-4 p-4">
         <div
-          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${accentClassName}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accentClassName}`}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
+          <p className="text-xs font-medium text-slate-500">{title}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
             {value}
           </p>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{helperText}</p>
+          <p className="mt-1 text-xs leading-5 text-slate-600">{helperText}</p>
         </div>
       </CardContent>
     </Card>

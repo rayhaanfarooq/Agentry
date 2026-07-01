@@ -31,6 +31,15 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          DEFAULT: "#1e3a8a",
+          deep: "#172554",
+          hover: "#1d4ed8",
+          foreground: "#ffffff",
+          50: "#eef4ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+        },
         success: "#059669",
         danger: "#DC2626",
         warning: "#D97706",
@@ -42,7 +51,7 @@ const config: Config = {
       },
       boxShadow: {
         panel:
-          "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04)",
+          "0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(30, 58, 138, 0.08)",
       },
     },
   },
